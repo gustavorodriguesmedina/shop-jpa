@@ -17,7 +17,7 @@ public class Order {
     @Column(name = "total_value")
     private BigDecimal totalValue = BigDecimal.ZERO;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)

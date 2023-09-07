@@ -15,7 +15,7 @@ public class OrderDao {
         this.em = em;
     }
 
-    public void registerOrder(Order order){
+    public void register(Order order){
         this.em.persist(order);
     }
 
@@ -35,5 +35,12 @@ public class OrderDao {
                 "GROUP BY product.name " +
                 "ORDER BY item.quantity DESC";
         return em.createQuery(jpql, ReportSalesVo.class).getResultList();
+    }
+
+    public Order findOrderWithCostumer(Long id){
+        String jpql = "SELECT o FROM Order o JOIN FETCH o.costumer WHERE o.id = :id";
+        return em.createQuery(jpql, Order.class)
+                .setParameter("id", id)
+                .getSingleResult();
     }
 }

@@ -6,48 +6,20 @@ import com.gustavo.DAO.OrderDao;
 import com.gustavo.DAO.ProductDao;
 import com.gustavo.Model.*;
 import com.gustavo.Util.JPAUtil;
-import com.gustavo.VO.ReportSalesVo;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
-import java.util.List;
 
-public class OrderTest {
+public class PerformanceTest {
 
     public static void main(String[] args) {
         registerProduct();
-
         EntityManager em = JPAUtil.getEntityManager();
-
-        ProductDao productDao = new ProductDao(em);
-        Product phone = productDao.findById(1L);
-        Product videogame = productDao.findById(2L);
-        Product macbook = productDao.findById(3L);
-        CustomerDao customerDao = new CustomerDao(em);
-        Customer customer = customerDao.findById(1L);
-
-        em.getTransaction().begin();
-
-        Order order1 = new Order(customer);
-        order1.addItems(new OrderItem(10, phone, order1));
-        order1.addItems(new OrderItem(20, videogame, order1));
-
-        Order order2 = new Order(customer);
-        order2.addItems(new OrderItem(5, macbook, order2));
-
         OrderDao orderDao = new OrderDao(em);
-        orderDao.register(order1);
-        orderDao.register(order2);
 
-        em.getTransaction().commit();
-
-        BigDecimal totalSold = orderDao.valueTotalSold();
-        System.out.println(totalSold);
-
-        List<ReportSalesVo> report = orderDao.reportSales();
-        report.forEach(System.out::println);
-
+        Order order = orderDao.findOrderWithCostumer(1L);
         em.close();
+        System.out.println(order.getCustomer().getName());
     }
 
     private static void registerProduct() {
@@ -58,12 +30,15 @@ public class OrderTest {
         Product videogame = new Product("PS5", "White", new BigDecimal(300), videogames);
         Product macbook = new Product("MacBook", "Gray", new BigDecimal(500), computing);
         Customer customer = new Customer("Gustavo", "010203");
+        Order order = new Order(customer);
+        order.addItems(new OrderItem(20, videogame, order));
 
         EntityManager em = JPAUtil.getEntityManager();
 
         ProductDao productDao = new ProductDao(em);
         CategoryDao categoryDao = new CategoryDao(em);
         CustomerDao customerDao = new CustomerDao(em);
+        OrderDao orderDao = new OrderDao(em);
 
         em.getTransaction().begin();
 
@@ -74,10 +49,10 @@ public class OrderTest {
         productDao.register(videogame);
         productDao.register(macbook);
         customerDao.register(customer);
+        orderDao.register(order);
 
         em.getTransaction().commit();
 
         em.close();
     }
-
 }
