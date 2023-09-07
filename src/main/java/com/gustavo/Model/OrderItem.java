@@ -29,6 +29,10 @@ public class OrderItem {
         this.unitPrice = product.getValue();
     }
 
+    public BigDecimal getValue(){
+        return unitPrice.multiply(new BigDecimal(quantity));
+    }
+
     public Long getId() {
         return id;
     }
